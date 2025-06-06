@@ -1,0 +1,13 @@
+[project]
+name = "oracle-sample-schemas"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "oracledb",
+    "fastapi>=0.115.12",
+    "uvicorn>=0.34.0",
+    "aiosql>=13.4",
+    "glootil>=0.2.4"
+]
