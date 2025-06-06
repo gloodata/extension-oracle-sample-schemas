@@ -13,89 +13,6 @@ tb = Toolbox(
 )
 
 
-# =====================================
-# Utilities to create charts and tables
-# =====================================
-def create_group_chart(title, cols, rows, unit="", chart_type="bar"):
-    on_clicks = []
-    col_keys = [col[0] for col in cols]
-    row_lists = [[row.get(key) for key in col_keys] for row in rows]
-
-    result = {
-        "info": {
-            "type": "group",
-            "chartType": chart_type,
-            "title": title,
-            "unit": unit,
-            "keyName": cols[0][0],
-            "valName": cols[1][0],
-            "onClick": on_clicks,
-        },
-        "data": {"cols": cols, "rows": row_lists},
-    }
-    return result
-
-
-def create_series_chart(title, cols, rows, chart_type="bar"):
-    x, x_title = cols[0]
-    serie, serie_title = cols[1]
-    y, y_title = cols[2]
-
-    col_keys = [col[0] for col in cols]
-    row_lists = [[row.get(key) for key in col_keys] for row in rows]
-    on_clicks = []
-
-    return {
-        "type": "Series",
-        "chartType": chart_type,
-        "title": title,
-        "unit": "#",
-        "xColTitle": x_title,
-        "yColTitle": y_title,
-        "seriesCol": serie,
-        "xCol": x,
-        "valCols": [y],
-        "pivot": {
-            "keyName": serie,
-            "valName": y,
-        },
-        "cols": cols,
-        "rows": row_lists,
-        "onClick": on_clicks,
-    }
-
-
-def to_area(rows):
-    areas = [{"name": row[0], "value": row[1]} for idx, row in enumerate(rows)]
-    return areas
-
-
-def create_area_map(title, cols, rows, map_type="usa"):
-    col_keys = [col[0] for col in cols]
-    row_lists = [[row.get(key) for key in col_keys] for row in rows]
-    areas = to_area(row_lists)
-    on_clicks = []
-    result = {
-        "type": "AreaMap",
-        "mapId": map_type,
-        "infoId": map_type,
-        "onClick": on_clicks,
-        "items": areas,
-    }
-    return result
-
-
-def create_table(columns, rows):
-    on_clicks = []
-    rows_values = [[row[col["id"]] for col in columns] for row in rows]
-    return {
-        "type": "Table",
-        "columns": columns,
-        "rows": rows_values,
-        "onClick": on_clicks,
-    }
-
-
 # ================================
 # Declaration of enums and filters
 # ================================
@@ -195,12 +112,24 @@ async def sales_by_category(
         country=country,
     )
 
-    return create_group_chart(
-        "Sales by product category",
-        [["category", "Category"], ["total_sales", "total_sales"]],
-        rows,
-        chart_type="bar",
-    )
+    # Convert rows to the expected format
+    row_data = [[row["category"], row["total_sales"]] for row in rows]
+
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "bar",
+            "title": "Sales by product category",
+            "unit": "",
+            "keyName": "category",
+            "valName": "total_sales",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["category", "Category"], ["total_sales", "total_sales"]],
+            "rows": row_data
+        },
+    }
 
 
 # 2. Sales by Channel
@@ -238,12 +167,24 @@ async def sales_by_channel(
         customer_segment=customer_segment,
     )
 
-    return create_group_chart(
-        "Sales by channel",
-        [["channel", "Channel"], ["total_sales", "total_sales"]],
-        rows,
-        chart_type="bar",
-    )
+    # Convert rows to the expected format
+    row_data = [[row["channel"], row["total_sales"]] for row in rows]
+
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "bar",
+            "title": "Sales by channel",
+            "unit": "",
+            "keyName": "channel",
+            "valName": "total_sales",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["channel", "Channel"], ["total_sales", "total_sales"]],
+            "rows": row_data
+        },
+    }
 
 
 # 3. Customer Density by Region
@@ -269,7 +210,7 @@ async def customer_density(
     - customer_segment: Optional filter for customer segment.
 
     Result:
-    - An pie chart showing customer density by region.
+    - A pie chart showing customer density by region.
     """
     rows = await state.run_query(
         "customer_density",
@@ -278,8 +219,24 @@ async def customer_density(
         customer_segment=customer_segment,
     )
 
-    cols = [["region", "Country"], ["customer_count", "Customer Count"]]
-    return create_group_chart("Customer density by region", cols, rows, chart_type="pie")
+    # Convert rows to the expected format
+    row_data = [[row["region"], row["customer_count"]] for row in rows]
+
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "pie",
+            "title": "Customer density by region",
+            "unit": "",
+            "keyName": "region",
+            "valName": "customer_count",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["region", "Country"], ["customer_count", "Customer Count"]],
+            "rows": row_data
+        },
+    }
 
 
 # 4. Monthly Sales Trend by Category
@@ -317,12 +274,27 @@ async def monthly_sales_trend(
         product_category=product_category,
     )
 
-    return create_series_chart(
-        "Monthly sales trend by category",
-        [["calendar_month_desc", "Month"], ["category", "Category"], ["total_sales", "total_sales"]],
-        rows,
-        chart_type="line",
-    )
+    # Convert rows to the expected format
+    row_data = [[row["calendar_month_desc"], row["category"], row["total_sales"]] for row in rows]
+
+    return {
+        "type": "Series",
+        "chartType": "line",
+        "title": "Monthly sales trend by category",
+        "unit": "#",
+        "xColTitle": "Month",
+        "yColTitle": "total_sales",
+        "seriesCol": "category",
+        "xCol": "calendar_month_desc",
+        "valCols": ["total_sales"],
+        "pivot": {
+            "keyName": "category",
+            "valName": "total_sales",
+        },
+        "cols": [["calendar_month_desc", "Month"], ["category", "Category"], ["total_sales", "total_sales"]],
+        "rows": row_data,
+        "onClick": [],
+    }
 
 
 @tb.tool(
@@ -359,12 +331,27 @@ async def quarterly_sales_by_channel(
         min_amount=min_amount,
     )
 
-    return create_series_chart(
-        "Quarterly sales by channel",
-        [["calendar_quarter_desc", "Quarter"], ["category", "Channel"], ["total_sales", "total_sales"]],
-        rows,
-        chart_type="line",
-    )
+    # Convert rows to the expected format
+    row_data = [[row["calendar_quarter_desc"], row["category"], row["total_sales"]] for row in rows]
+
+    return {
+        "type": "Series",
+        "chartType": "line",
+        "title": "Quarterly sales by channel",
+        "unit": "#",
+        "xColTitle": "Quarter",
+        "yColTitle": "total_sales",
+        "seriesCol": "category",
+        "xCol": "calendar_quarter_desc",
+        "valCols": ["total_sales"],
+        "pivot": {
+            "keyName": "category",
+            "valName": "total_sales",
+        },
+        "cols": [["calendar_quarter_desc", "Quarter"], ["category", "Channel"], ["total_sales", "total_sales"]],
+        "rows": row_data,
+        "onClick": [],
+    }
 
 
 @tb.tool(
@@ -401,17 +388,34 @@ async def sales_analysis(
         country=country,
     )
 
-    columns = [
-        {"id": "category", "label": "Category", "visible": True },
-        {"id": "country", "label": "Country", "visible": True },
-        {"id": "total_sales", "label": "Total Sales", "visible": True },
-        {"id": "total_quantity", "label": "Total Quantity", "visible": True },
-        {"id": "unique_customers", "label": "Unique Customers", "visible": True },
-        {"id": "avg_sale_amount", "label": "Avg Sale Amount", "visible": True },
-        {"id": "avg_unit_price", "label": "Avg Unit Price", "visible": True },
+    # Convert rows to the expected format
+    row_data = [
+        [
+            row["category"],
+            row["country"],
+            row["total_sales"],
+            row["total_quantity"],
+            row["unique_customers"],
+            row["avg_sale_amount"],
+            row["avg_unit_price"]
+        ]
+        for row in rows
     ]
 
-    return create_table(columns, rows)
+    return {
+        "type": "Table",
+        "columns": [
+            {"id": "category", "label": "Category", "visible": True},
+            {"id": "country", "label": "Country", "visible": True},
+            {"id": "total_sales", "label": "Total Sales", "visible": True},
+            {"id": "total_quantity", "label": "Total Quantity", "visible": True},
+            {"id": "unique_customers", "label": "Unique Customers", "visible": True},
+            {"id": "avg_sale_amount", "label": "Avg Sale Amount", "visible": True},
+            {"id": "avg_unit_price", "label": "Avg Unit Price", "visible": True},
+        ],
+        "rows": row_data,
+        "onClick": [],
+    }
 
 
 @tb.tool(
@@ -448,5 +452,13 @@ async def sales_by_country(
         min_sales=min_sales,
     )
 
-    cols = [["region", "Country"], ["total_sales", "Total Sales"]]
-    return create_area_map("Sales by country", cols, rows, map_type="world")
+    # Convert rows to the expected format
+    items = [{"name": row["region"], "value": row["total_sales"]} for row in rows]
+
+    return {
+        "type": "AreaMap",
+        "mapId": "world",
+        "infoId": "world",
+        "onClick": [],
+        "items": items,
+    }
