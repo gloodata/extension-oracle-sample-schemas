@@ -84,7 +84,7 @@ uv self update
 
 3. **Configure Oracle connection**:
      Update the `config.toml` file with your Oracle database connection details:
-     ```toml
+     ```ini
      [oracle]
      username = username
      password = password
