@@ -1,11 +1,12 @@
-import oracledb
-import os
 import configparser
-import traceback
-import sys
-from glootil import DynEnum
-from enum import Enum
 import logging
+import os
+import sys
+import traceback
+from enum import Enum
+
+import oracledb
+from glootil import DynEnum
 
 oracledb.defaults.fetch_lobs = False
 logger = logging.getLogger("oracle")

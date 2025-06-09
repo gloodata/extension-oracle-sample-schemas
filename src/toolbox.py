@@ -1,7 +1,9 @@
-from glootil import Toolbox, DynEnum
-from state import State
 import logging
 from datetime import date
+
+from glootil import DynEnum, Toolbox
+
+from state import State
 
 logger = logging.getLogger("toolbox")
 NS = "gd-oracle"
@@ -468,7 +470,8 @@ async def sales_by_country(
     )
 
     # Convert rows to the expected format
-    items = [{"name": row["region"], "value": row["total_sales"]} for row in rows]
+    items = [{"name": row["region"], "value": row["total_sales"]}
+             for row in rows]
 
     return {
         "type": "AreaMap",

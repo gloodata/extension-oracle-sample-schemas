@@ -1,7 +1,8 @@
 import logging
-from oracle import Oracle, OracleDriverAdapter, to_query_arg
+
 import aiosql
 
+from oracle import Oracle, OracleDriverAdapter, to_query_arg
 
 logger = logging.getLogger("state")
 
