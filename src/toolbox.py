@@ -80,6 +80,7 @@ class CustomerSegment(DynEnum):
 # Declaration of tools
 # ====================
 
+
 # 1. Sales by product category
 @tb.tool(
     name="Sales by product category",
@@ -127,7 +128,7 @@ async def sales_by_category(
         },
         "data": {
             "cols": [["category", "Category"], ["total_sales", "total_sales"]],
-            "rows": row_data
+            "rows": row_data,
         },
     }
 
@@ -182,7 +183,7 @@ async def sales_by_channel(
         },
         "data": {
             "cols": [["channel", "Channel"], ["total_sales", "total_sales"]],
-            "rows": row_data
+            "rows": row_data,
         },
     }
 
@@ -234,7 +235,7 @@ async def customer_density(
         },
         "data": {
             "cols": [["region", "Country"], ["customer_count", "Customer Count"]],
-            "rows": row_data
+            "rows": row_data,
         },
     }
 
@@ -275,7 +276,10 @@ async def monthly_sales_trend(
     )
 
     # Convert rows to the expected format
-    row_data = [[row["calendar_month_desc"], row["category"], row["total_sales"]] for row in rows]
+    row_data = [
+        [row["calendar_month_desc"], row["category"], row["total_sales"]]
+        for row in rows
+    ]
 
     return {
         "type": "Series",
@@ -291,7 +295,11 @@ async def monthly_sales_trend(
             "keyName": "category",
             "valName": "total_sales",
         },
-        "cols": [["calendar_month_desc", "Month"], ["category", "Category"], ["total_sales", "total_sales"]],
+        "cols": [
+            ["calendar_month_desc", "Month"],
+            ["category", "Category"],
+            ["total_sales", "total_sales"],
+        ],
         "rows": row_data,
         "onClick": [],
     }
@@ -332,7 +340,10 @@ async def quarterly_sales_by_channel(
     )
 
     # Convert rows to the expected format
-    row_data = [[row["calendar_quarter_desc"], row["category"], row["total_sales"]] for row in rows]
+    row_data = [
+        [row["calendar_quarter_desc"], row["category"], row["total_sales"]]
+        for row in rows
+    ]
 
     return {
         "type": "Series",
@@ -348,7 +359,11 @@ async def quarterly_sales_by_channel(
             "keyName": "category",
             "valName": "total_sales",
         },
-        "cols": [["calendar_quarter_desc", "Quarter"], ["category", "Channel"], ["total_sales", "total_sales"]],
+        "cols": [
+            ["calendar_quarter_desc", "Quarter"],
+            ["category", "Channel"],
+            ["total_sales", "total_sales"],
+        ],
         "rows": row_data,
         "onClick": [],
     }
@@ -397,7 +412,7 @@ async def sales_analysis(
             row["total_quantity"],
             row["unique_customers"],
             row["avg_sale_amount"],
-            row["avg_unit_price"]
+            row["avg_unit_price"],
         ]
         for row in rows
     ]
